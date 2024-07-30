@@ -22,7 +22,19 @@ body {
     height: 100vh;
     background-color: white;
     color: #323232;
-    
+    overflow-x: hidden;
+}
+
+.company-logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+}
+
+.company-logo img {
+    height: 40px; /* Adjust as needed */
+    width: auto;
 }
 
 .chat-container {
@@ -207,3 +219,77 @@ body {
     font-size: 1.2em;
     margin-left: 5px;
 }
+
+/* Menu */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100vh;
+    background-color: #f9f9f9;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-content {
+    padding: 100px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.new-chat {
+    font-weight: bold;
+    padding: 10px;
+    background-color: #20556E;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.previous-chats {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.chat-item {
+    padding: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.chat-item:hover {
+    background-color: #ececec;
+    border-radius: 10px;
+}
+
+.login-button-container {
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.login-button {
+    padding: 10px;
+    background-color: #F8BD00;
+    color: #20556E;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 800px;
+}
+

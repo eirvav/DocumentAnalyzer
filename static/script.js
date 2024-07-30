@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const previousChats = document.querySelector('.previous-chats');
     const submitBtn = document.getElementById('submit-btn');
     const fileInput = document.getElementById('file-input');
     const userInput = document.getElementById('user-input');
@@ -7,6 +8,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const filePreview = document.getElementById('file-preview');
     const welcomeScreen = document.getElementById('welcome-screen');
 
+    const sideMenu = document.querySelector('.side-menu');
+    const triggerWidth = window.innerWidth * 0.1; // 10% of window width
+
+    document.addEventListener('mousemove', function(e) {
+        if (e.clientX <= triggerWidth) {
+            sideMenu.style.left = '0';
+        } else if (e.clientX > 250) { // Width of the menu
+            sideMenu.style.left = '-250px';
+        }
+    });
+
+    sideMenu.addEventListener('mouseleave', function() {
+        sideMenu.style.left = '-250px';
+    });
+
     function toggleWelcomeScreen() {
         if (chatLog.children.length === 0) {
             welcomeScreen.style.display = 'flex';
@@ -14,6 +30,14 @@ document.addEventListener('DOMContentLoaded', function() {
             welcomeScreen.style.display = 'none';
         }
     }
+
+    if (previousChats) {
+        previousChats.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            previousChats.scrollTop += e.deltaY;
+        });
+    }
+
 
     // Initial call to set welcome screen visibility
     toggleWelcomeScreen();
