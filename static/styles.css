@@ -50,6 +50,9 @@ body {
     flex-grow: 1;
     overflow-y: auto;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adds space between messages */
 }
 
 .message {
@@ -68,9 +71,12 @@ body {
     border-radius: 20px;
     padding: 10px 20px;
     font-weight: 400;
-    display: table;
+    display: inline-block;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    max-height: 300px; /* Set a maximum height */
+    overflow-y: auto; /* Allow vertical scrolling if content exceeds max-height */
 }
-
 .download-csv {
     display: block;
     margin-top: 5px;
@@ -184,24 +190,21 @@ body {
 
 .assistant-text {
     flex-grow: 1;
-    
 }
 
 .assistant-content {
     display: flex;
     align-items: flex-start;
-
 }
 
 .file-preview {
-    display: none;
-    margin-right: 10px;
+    margin: auto;
 }
 
 .file-preview-item {
     display: flex;
     align-items: center;
-    background-color: #e0e0e0;
+    background-color: #F8BD00;
     padding: 5px 10px;
     border-radius: 15px;
     font-size: 0.9em;

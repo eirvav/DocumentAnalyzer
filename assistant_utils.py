@@ -2,8 +2,9 @@
 import os
 import time
 from openai import AzureOpenAI
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 from dotenv import load_dotenv
-from config import Config
 
 
 load_dotenv()
