@@ -22,6 +22,7 @@ body {
     height: 100vh;
     background-color: white;
     color: #323232;
+    
 }
 
 .chat-container {
@@ -43,7 +44,7 @@ body {
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 10px;
-    line-height: 1.4;
+    line-height: 1.8;
 }
 
 .user-message {
@@ -55,6 +56,7 @@ body {
     border-radius: 20px;
     padding: 10px 20px;
     font-weight: 400;
+    display: table;
 }
 
 .download-csv {
@@ -74,7 +76,7 @@ body {
 
 .input-container {
     display: flex;
-    padding: 10px 15px;
+    padding: 7px 15px;
     background-color: #f0f0f0;
     border-radius: 50px;
     margin-top: 10px;
@@ -83,6 +85,7 @@ body {
 .file-input-label {
     padding: 10px;
     cursor: pointer;
+    color: black;
 }
 
 #user-input {
@@ -99,6 +102,36 @@ body {
     border: none;
     padding: 10px;
     cursor: pointer;
+}
+
+.welcome-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+}
+
+.welcome-logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.welcome-screen h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.welcome-screen p {
+    font-size: 16px;
+    color: #666;
+}
+
+#chat-log:not(:empty) + .welcome-screen,
+.loader:not([style*="display: none"]) + .welcome-screen {
+    display: none;
 }
 
 .loader {
@@ -128,6 +161,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    line-height: 2;
 }
 .assistant-logo {
     width: 24px;
@@ -138,10 +172,38 @@ body {
 
 .assistant-text {
     flex-grow: 1;
+    
 }
 
 .assistant-content {
     display: flex;
     align-items: flex-start;
 
+}
+
+.file-preview {
+    display: none;
+    margin-right: 10px;
+}
+
+.file-preview-item {
+    display: flex;
+    align-items: center;
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+}
+
+.file-preview-item i {
+    margin-right: 5px;
+}
+
+.file-preview-item .remove-file {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-left: 5px;
 }

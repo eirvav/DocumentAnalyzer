@@ -4,6 +4,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const userInput = document.getElementById('user-input');
     const chatLog = document.getElementById('chat-log');
     const loader = document.getElementById('loader');
+    const filePreview = document.getElementById('file-preview');
+    const welcomeScreen = document.getElementById('welcome-screen');
+
+    function toggleWelcomeScreen() {
+        if (chatLog.children.length === 0) {
+            welcomeScreen.style.display = 'flex';
+        } else {
+            welcomeScreen.style.display = 'none';
+        }
+    }
+
+    // Initial call to set welcome screen visibility
+    toggleWelcomeScreen();
 
     if (submitBtn) {
         submitBtn.onclick = sendMessage;
@@ -32,9 +45,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return; // Don't send empty messages
         }
         
-        // Show loader
+        // Show loader and hide welcome screen
         if (loader) {
             loader.style.display = 'block';
+            toggleWelcomeScreen();
         }
         
         fetch('/', {
@@ -56,10 +70,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     addCsvDownloadLink();
                 }
             }
-            // Clear the input field after sending
+            // Clear the input field and file preview after sending
             if (userInput) {
                 userInput.value = '';
             }
+            clearFilePreview();
+            toggleWelcomeScreen();
         })
         .catch(error => {
             // Hide loader
@@ -69,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.error('Error:', error);
             addMessageToChatLog('assistant', `Error: ${error}`);
+            toggleWelcomeScreen();
         });
     }
 
@@ -99,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             chatLog.appendChild(messageElement);
             chatLog.scrollTop = chatLog.scrollHeight;
+            toggleWelcomeScreen();
         }
     }
     
@@ -115,13 +133,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Display the name of the uploaded file
+    // Display the name of the uploaded file in the input field
     if (fileInput) {
         fileInput.onchange = function() {
             if (this.files.length > 0) {
                 var fileName = this.files[0].name;
-                addMessageToChatLog('user', `Uploaded file: ${fileName}`);
+                updateFilePreview(fileName);
             }
         };
+    }
+
+    function updateFilePreview(fileName) {
+        filePreview.innerHTML = `
+            <div class="file-preview-item">
+                <i class="fas fa-file-pdf"></i>
+                <span>${fileName}</span>
+                <button class="remove-file">&times;</button>
+            </div>
+        `;
+        filePreview.style.display = 'block';
+        
+        // Add event listener to remove button
+        const removeButton = filePreview.querySelector('.remove-file');
+        removeButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            clearFilePreview();
+        });
+    }
+
+    function clearFilePreview() {
+        fileInput.value = '';
+        filePreview.innerHTML = '';
+        filePreview.style.display = 'none';
     }
 });

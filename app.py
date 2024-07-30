@@ -27,7 +27,7 @@ def parse_csv_response(response):
 def index():
     if request.method == 'POST':
         if 'file' not in request.files:
-            return jsonify({'error': 'No file part'})
+            return jsonify({'error': 'Please Upload a File'})
         file = request.files['file']
         if file.filename == '':
             return jsonify({'error': 'No selected file'})
