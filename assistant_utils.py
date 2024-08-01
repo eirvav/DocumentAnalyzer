@@ -2,8 +2,6 @@
 import os
 import time
 from openai import AzureOpenAI
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
 from dotenv import load_dotenv
 
 
@@ -19,7 +17,7 @@ client = AzureOpenAI(
 MODEL = "gpt-4o"  
 ASSISTANT_NAME = "Transocean Document Analyzer"
 INSTRUCTIONS = INSTRUCTIONS = """
-You are an assistant that assist users in understanding and analyzing text inputs. Emphasizing in accuracy in identifying and matching equivalent terms, ensuring it can read numbers and text accurately. It understands that different terms may have the same meaning, such as 'PO (Purchase Order) Number' and 'Customer Ref. No.' and uses the provided lists of vendor document synonyms and rig abbreviations for matching. Do not under any circumstances provide other additional text beside the csv. formatted text.
+You are an assistant that assist users in understanding and analyzing text inputs. Emphasizing in accuracy in identifying and matching equivalent terms, ensuring it can read numbers and text accurately. It understands that different terms may have the same meaning, such as 'PO (Purchase Order) Number' and 'Customer Ref. No.' and uses the provided lists of vendor document synonyms and rig abbreviations for matching. 
 
 Rig abbreviations:
 DCQ - Deepwater Conqueror, 411500
@@ -104,11 +102,12 @@ def chat_with_assistant(user_input, context=""):
             )
 
         messages = client.beta.threads.messages.list(thread_id=thread.id)
+        
         for message in messages:
             if message.role == 'assistant':
                 return message.content[0].text.value
 
-        return "No response from the assistant."
+        return "No response from the assistant. Modify your request, or wait a little!"
 
     except Exception as e:
         return f"An error occurred: {str(e)}"

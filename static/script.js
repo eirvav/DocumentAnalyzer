@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const loader = document.getElementById('loader');
     const filePreview = document.getElementById('file-preview');
     const welcomeScreen = document.getElementById('welcome-screen');
-
     const sideMenu = document.querySelector('.side-menu');
-    const triggerWidth = window.innerWidth * 0.1; // 10% of window width
+    const triggerWidth = window.innerWidth * 0.1;
+    let isFirstMessage = true;
 
     document.addEventListener('mousemove', function(e) {
         if (e.clientX <= triggerWidth) {
@@ -18,6 +18,48 @@ document.addEventListener('DOMContentLoaded', function() {
             sideMenu.style.left = '-250px';
         }
     });
+
+    function autoResize() {
+        // Store the current scroll position
+        const scrollPos = window.pageYOffset;
+        
+        // Reset height to auto to get the correct scrollHeight
+        this.style.height = 'auto';
+        
+        // Calculate the new height
+        const newHeight = this.scrollHeight;
+        
+        // Only resize if content exceeds more than one line
+        if (newHeight > this.offsetHeight) {
+            this.style.height = newHeight + 'px';
+        }
+        
+        // Restore the scroll position
+        window.scrollTo(0, scrollPos);
+    }
+
+    userInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            submitBtn.click();
+        }
+    });
+
+    // Update placeholder visibility
+    userInput.addEventListener('focus', function() {
+        if (this.value.trim() === '') {
+            this.setAttribute('data-placeholder', this.placeholder);
+            this.placeholder = '';
+        }
+    });
+
+    userInput.addEventListener('blur', function() {
+        if (this.value.trim() === '') {
+            this.placeholder = this.getAttribute('data-placeholder');
+        }
+    });
+
+    userInput.addEventListener('input', autoResize);
 
     sideMenu.addEventListener('mouseleave', function() {
         sideMenu.style.left = '-250px';
@@ -54,12 +96,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+    //Sjekke om dette funker
     function sendMessage(e) {
         e.preventDefault();
         var formData = new FormData();
         
-        if (fileInput && fileInput.files.length > 0) {
+        if (isFirstMessage && fileInput && fileInput.files.length > 0) {
             formData.append('file', fileInput.files[0]);
+        } else if (isFirstMessage) {
+            addMessageToChatLog('assistant', 'Error: Please upload a file for the first message');
+            return;
         }
         
         if (userInput && userInput.value.trim() !== '') {
@@ -75,6 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleWelcomeScreen();
         }
         
+        sendMessageWithRetry(formData, 3); // Retry up to 3 times
+    }
+
+    function sendMessageWithRetry(formData, maxRetries, delay = 1000) {
         fetch('/', {
             method: 'POST',
             body: formData
@@ -93,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.csv_available) {
                     addCsvDownloadLink();
                 }
+                isFirstMessage = false;
             }
             // Clear the input field and file preview after sending
             if (userInput) {
@@ -102,14 +154,19 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleWelcomeScreen();
         })
         .catch(error => {
-            // Hide loader
-            if (loader) {
-                loader.style.display = 'none';
-            }
-            
             console.error('Error:', error);
-            addMessageToChatLog('assistant', `Error: ${error}`);
-            toggleWelcomeScreen();
+            if (maxRetries > 0) {
+                setTimeout(() => {
+                    sendMessageWithRetry(formData, maxRetries - 1, delay * 2);
+                }, delay);
+            } else {
+                // Hide loader
+                if (loader) {
+                    loader.style.display = 'none';
+                }
+                addMessageToChatLog('assistant', `Error: ${error}`);
+                toggleWelcomeScreen();
+            }
         });
     }
 
@@ -149,7 +206,22 @@ document.addEventListener('DOMContentLoaded', function() {
         downloadLink.href = '/download_csv';
         downloadLink.className = 'download-csv';
         downloadLink.textContent = 'Download CSV';
-        downloadLink.download = '';
+        downloadLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('/download_csv')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'response.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Error downloading CSV:', error));
+        });
         
         const lastAssistantMessage = chatLog.querySelector('.assistant-message:last-child');
         if (lastAssistantMessage) {
@@ -160,9 +232,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Display the name of the uploaded file in the input field
     if (fileInput) {
         fileInput.onchange = function() {
-            if (this.files.length > 0) {
+            if (this.files.length > 0 && isFirstMessage) {
                 var fileName = this.files[0].name;
                 updateFilePreview(fileName);
+            } else if (!isFirstMessage) {
+                clearFilePreview();
+                alert('File upload is only allowed for the first message');
             }
         };
     }
@@ -172,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="file-preview-item">
                 <i class="fas fa-file-pdf"></i>
                 <span>${fileName}</span>
-                <button class="remove-file">&times;</button>
+                <button class="remove-file" style="font-size: 1.3rem;">&times;</button>
             </div>
         `;
         filePreview.style.display = 'block';
@@ -191,3 +266,4 @@ document.addEventListener('DOMContentLoaded', function() {
         filePreview.style.display = 'none';
     }
 });
+
