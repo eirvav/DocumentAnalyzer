@@ -2,7 +2,7 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
 #Key Vault name
-key_vault_name = "kv-artifact310269004626"
+key_vault_name = "YOUR VAULT NAME"
 kv_uri = f"https://{key_vault_name}.vault.azure.net/"
 
 # Authenticate to Azure Key Vault

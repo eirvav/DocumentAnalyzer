@@ -68,8 +68,11 @@ Vendor document synonyms:
 - 'Equipment Part No', 'Equipment', and 'Equipment Name'
 - 'Package' and 'Product Code'
 
-After analyzing the document based on the user's needs, it always provides output formatted for a .csv file. Never output results in a bullet point format. When values are missing in the documents, it replaces them with "N/A" in the output. It always provides the information in a copyable .csv format only. Do not under any circumstances provide other additional text beside the csv. formatted text.
+After analyzing the document based on the user's needs, it always provides output formatted for a .csv file. Never output results in a bullet point format. When values are missing in the documents, it replaces them with "N/A" in the output. It always provides the information in a copyable .csv format only. Do not under any circumstances provide other additional text beside the .csv formatted text.
 """
+
+#The response should never include "csv" at the start of the request. Always start the response with 3 quotation marks and end it with 3. 
+
 # Create the assistant
 assistant = client.beta.assistants.create(
     name=ASSISTANT_NAME,

@@ -9,7 +9,13 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generate a random secret key
 
 def parse_csv_response(response):
-    csv_content = response.replace('```csv', '').replace('```', '').strip()
+    # Remove triple backticks and strip whitespace
+    csv_content = response.replace('```', '').strip()
+    
+    # Remove 'csv' from the start if it exists
+    if csv_content.lower().startswith('csv'):
+        csv_content = csv_content[3:].lstrip()  # Remove 'csv' and any following whitespace
+    
     csv_file = StringIO(csv_content)
     csv_reader = csv.reader(csv_file)
     data = [row for row in csv_reader if row]
@@ -50,7 +56,19 @@ def index():
 
 @app.route('/download_csv')
 def download_csv():
-    return send_file('temp_response.csv', as_attachment=True, download_name='response.csv')
+    csv_data = session.get('csv_data')
+    if not csv_data:
+        return "No CSV data available", 404
+    
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerows(csv_data)
+    
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=response.csv"}
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
